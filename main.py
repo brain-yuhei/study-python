@@ -24,3 +24,18 @@ print("\n--- エラーログ一覧 ---")
 for line in lines:
     if "[ERROR]" in line:
         print(line.strip())
+
+# INFOメッセージだけ抽出
+print("\n--- インフォログ一覧 ---")
+for line in lines:
+    if "[INFO]" in line:
+        print(line.strip())
+
+# WARNINGメッセージだけ抽出
+print("\n--- ワーニングログ一覧 ---")
+for line in lines:
+    if "[WARNING]" in line:
+        parts = line.split() # 行データをsplitを使って分割
+        message = " ".join(parts[3:]) # 分割したパーツを指定して格納
+        print(message)
+ 
