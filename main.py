@@ -35,7 +35,7 @@ for line in lines:
 print("\n--- ワーニングログ一覧 ---")
 for line in lines:
     if "[WARNING]" in line:
-        parts = line.split() # 行データをsplitを使って分割
-        message = " ".join(parts[3:]) # 分割したパーツを指定して格納
+        parts = line.split()
+        message = " ".join(parts[3:])
         print(message)
  
