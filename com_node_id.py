@@ -1,5 +1,7 @@
 # ログファイルとノードハッシュファイルの比較処理
 
+import csv
+
 # ノードハッシュファイルのオブジェクト生成（ｆ）
 with open("C:\\Users\\y_hashimoto\\selfpy\\log\\ノードハッシュ.txt", encoding='cp932') as f:
 
@@ -15,18 +17,25 @@ with open("C:\\Users\\y_hashimoto\\selfpy\\log\\ノードハッシュ.txt", enco
         # ノードハッシュIDの追加
         node_hash_id.add(clean_line)  
 
+# CSVファイルの作成（書き出しモードで）
+with open("C:\\Users\\y_hashimoto\\selfpy\\log\\log.csv", "w", newline="", encoding="utf-8") as csvfile:
 
-# ログファイルのオブジェクト生成（ｆ）
-with open("C:\\Users\\y_hashimoto\\selfpy\\log\\test_20251111.log", encoding='cp932') as f:
+    writer = csv.writer(csvfile)
 
-    # ファイルを1行ずつ読み込む
-    for line in f:
+    # ログファイルのオブジェクト生成（ｆ）
+    with open("C:\\Users\\y_hashimoto\\selfpy\\log\\test_20251111.log", encoding='cp932') as f:
 
-        # ノードIDを取り出す
-        node_id = line.split("ノードID：")[-1].strip()
+        # ファイルを1行ずつ読み込む
+        for line in f:
 
-        # ノードハッシュIDと一致するノードID行を書き出す
-        if node_id in node_hash_id:
+            # ノードIDを取り出す
+            node_id = line.split("ノードID：")[-1].strip()
 
-            # 空行無しで書き出し処理
-            print(line.strip())
+            # ノードハッシュIDと一致するノードID行を書き出す
+            if node_id in node_hash_id:
+
+                # 空行無しで書き出し処理
+                print(line.strip())
+
+                # CSVファイルに書き出し処理
+                writer.writerow([line.strip(), node_id])
