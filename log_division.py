@@ -3,53 +3,60 @@ import os
 
 # 出力先フォルダ
 output_folder = "C:\\Users\\y_hashimoto\\selfpy\\log"
-os.makedirs(output_folder, exist_ok=True) # フォルダがない場合は作成
+os.makedirs(output_folder, exist_ok=True)
 
-# シナリオ名の正規表現（reが正規表現の宣言）
-scenario_name = re.compile(r"シナリオ「([A-Za-z0-9_.]+)」")
+# シナリオ名の正規表現
+scenario_pattern = re.compile(r"シナリオ「([A-Za-z0-9_.]+)」")
 
-# 書き込み中のシナリオ名とファイル
+# 現在のシナリオ情報
 current_scenario_name = ""
-current_scenario_file = ""
+current_scenario_file = None
 
-# その他ログファイルを開く（最初のシナリオが出るまでここへ書く）※osでフォルダにアクセス
+# その他ログファイル
 other_log_path = os.path.join(output_folder, "その他ログ.log")
 other_log_file = open(other_log_path, "w", encoding="cp932")
 
-# 分割元のログファイルを開く
+# 元ログファイル
 with open("C:\\Users\\y_hashimoto\\selfpy\\log\\test_20251111.log", encoding="cp932") as log_file:
 
-    # 1行ずつ読む
     for line in log_file:
 
-        # 行の中にシナリオ名があるかチェック
-        found = scenario_name.search(line)
+        # シナリオ名を探す
+        found = scenario_pattern.search(line)
 
-        # シナリオがある場合
         if found:
-            print("シナリオ取得:", found.group(1))
-
-            # シナリオ名を取得
             new_scenario_name = found.group(1)
+            print("シナリオ取得:", new_scenario_name)
 
-            # シナリオ名が変わった場合
-            if new_scenario_name != current_scenario_name :
+            # シナリオが切り替わった場合
+            if new_scenario_name != current_scenario_name:
 
-                # 前のログファイルは閉じる            
+                # 前のシナリオファイルを閉じる
+                if current_scenario_file is not None:
+                    current_scenario_file.close()
 
                 # シナリオ名を更新
-                current_scenario_name = scenario_name
+                current_scenario_name = new_scenario_name
 
-                # 新しいログファイルを開く（追記できるようにする）
+                # 新しいシナリオファイルを開く（追記）
+                scenario_file_path = os.path.join(
+                    output_folder, current_scenario_name + ".log"
+                )
+                current_scenario_file = open(scenario_file_path, "a", encoding="cp932")
 
             # シナリオ行を書き込む
+            current_scenario_file.write(line)
 
-        # それ以外     
         else:
-            print("なし:", line.strip())
-            
-            # シナリオを保持している場合は現ログファイルに書き込む
+            # シナリオが始まっていれば、そのシナリオへ
+            if current_scenario_file is not None:
+                current_scenario_file.write(line)
+            # まだシナリオが始まっていなければその他ログへ
+            else:
+                other_log_file.write(line)
 
-            # シナリオ未保持の場合はその他ログファイルに書き込む
+# 後処理
+if current_scenario_file is not None:
+    current_scenario_file.close()
 
-# ファイルを閉じる
+other_log_file.close()
